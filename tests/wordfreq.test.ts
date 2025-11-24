@@ -45,21 +45,7 @@ describe("wordfreq Node 版核心能力", () => {
   });
 
   it("若已安装 nodejieba，应输出多字词以对齐词频词典", () => {
-    let jiebaAvailable = false;
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require("nodejieba");
-      jiebaAvailable = true;
-    } catch {
-      jiebaAvailable = false;
-    }
-
     const tokens = tokenize("我来到北京清华大学", "zh");
-    if (jiebaAvailable) {
-      expect(tokens).toContain("清华大学");
-    } else {
-      // 未安装时至少不应崩溃，长度通常会更长（按字切分）
-      expect(tokens.length).toBeGreaterThan(0);
-    }
+    expect(tokens).toContain("清华大学");
   });
 });

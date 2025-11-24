@@ -5,7 +5,7 @@ wordfreq (Node.js/TypeScript)
 
 - 数据：直接复用 `data/*.msgpack.gz`，未改动格式。
 - 输出：默认 ESM，提供 CJS 兼容入口与 `.d.ts` 类型声明。
-- 分词：基于 `Intl.Segmenter` 的通用分词，中文可选安装 `nodejieba` 获得更精确结果（未安装时自动降级）；安装后会自动加载仓库内的定制字典 `data/jieba_zh.txt` / `data/jieba_zh_orig.txt`，尽量对齐词频数据生成时的切分方式。
+- 分词：基于 `Intl.Segmenter` 的通用分词，中文默认依赖 `nodejieba`，启动时自动加载仓库内的定制字典 `data/jieba_zh.txt` / `data/jieba_zh_orig.txt`，尽量对齐词频数据生成时的切分方式；如环境特殊未能加载时，会降级使用 `Intl.Segmenter`。
 
 快速开始
 --------

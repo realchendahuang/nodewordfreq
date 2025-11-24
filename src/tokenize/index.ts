@@ -15,28 +15,35 @@ let jiebaMainLoaded = false;
 let jiebaOrigLoaded = false;
 
 function loadNodeJieba(externalWordlist: boolean): typeof import("nodejieba") | null {
-  if (!nodeJieba) {
+  let jieba = nodeJieba;
+  if (!jieba) {
     try {
       // 在 ESM 环境下需通过 createRequire 动态加载 CommonJS 包。
       // 若未安装可选依赖，则捕获异常并回退至通用分词。
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      nodeJieba = requireFromEsm("nodejieba");
+      jieba = requireFromEsm("nodejieba");
+      nodeJieba = jieba;
     } catch {
       return null;
     }
   }
 
+  if (!jieba) {
+    return null;
+  }
+
   if (externalWordlist && !jiebaOrigLoaded) {
-    nodeJieba.load({ dict: getJiebaOrigDictPath() });
+    // 使用原版 jieba 词典（含词性标签），适合外部通用分词场景。
+    jieba.load({ dict: getJiebaOrigDictPath() });
     jiebaOrigLoaded = true;
   } else if (!externalWordlist && !jiebaMainLoaded) {
-    // HMM 在 nodejieba 中无法直接禁用，这里仅通过加载与词频表匹配的自定义词典
-    // 来最大程度贴合 Python 版的分词结果。
-    nodeJieba.load({ dict: getJiebaMainDictPath() });
+    // wordfreq 的定制词典只有两列（词 + 频率），将其作为 userDict 叠加在内置主词典上，
+    // 避免触发 nodejieba 对主词典三列格式的校验错误。
+    jieba.load({ userDict: getJiebaMainDictPath() });
     jiebaMainLoaded = true;
   }
 
-  return nodeJieba;
+  return jieba;
 }
 
 function getSegmenter(lang?: string): Intl.Segmenter {

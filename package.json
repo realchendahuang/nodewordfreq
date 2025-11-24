@@ -49,10 +49,8 @@
   },
   "dependencies": {
     "lru-cache": "^11.2.2",
-    "msgpackr": "^1.11.5"
-  },
-  "optionalDependencies": {
-    "nodejieba": "^2.6.1"
+    "msgpackr": "^1.11.5",
+    "nodejieba": "^3.5.2"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
