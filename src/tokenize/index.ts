@@ -8,7 +8,9 @@ import { uncurlQuotes } from "../utils/quotes";
 const PUNCT_RE = /[\p{P}\p{S}]+/u;
 
 const segmenterCache = new Map<string, Intl.Segmenter>();
-const requireFromEsm = createRequire(import.meta.url);
+const requireFromEsm = typeof __dirname !== "undefined"
+  ? createRequire(`${__dirname}/`)
+  : createRequire(import.meta.url);
 
 let nodeJieba: typeof import("nodejieba") | null = null;
 let jiebaMainLoaded = false;

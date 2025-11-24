@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -11,8 +12,10 @@ export const DATA_ENV_KEY = "WORDFREQ_DATA";
  * 解析出当前编译后文件所在目录，再向上回退到项目根目录，拼出默认的数据目录。
  * 这样设计是为了兼顾 ESM 与 CJS 输出：不依赖 __dirname，改用 import.meta.url 提供的绝对定位。
  */
-const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-const defaultDataDir = path.resolve(moduleDir, "../../data");
+const moduleDir = path.dirname(
+  typeof __dirname !== "undefined" ? __dirname : fileURLToPath(import.meta.url),
+);
+const defaultDataDir = path.resolve(moduleDir, "../data");
 
 /**
  * 返回词频数据所在的目录。
@@ -20,10 +23,22 @@ const defaultDataDir = path.resolve(moduleDir, "../../data");
  */
 export function getDataDir(): string {
   const override = process.env[DATA_ENV_KEY];
-  if (override && override.trim().length > 0) {
-    return path.resolve(override);
+  const candidates = [
+    override && override.trim().length > 0 ? path.resolve(override) : null,
+    defaultDataDir,
+    path.resolve(process.cwd(), "node_modules", "nodewordfreq", "data"),
+    path.resolve(process.cwd(), "data"),
+  ].filter((p): p is string => Boolean(p));
+
+  for (const dir of candidates) {
+    if (fs.existsSync(dir)) {
+      return dir;
+    }
   }
-  return defaultDataDir;
+
+  throw new Error(
+    `无法找到词频数据目录，请设置 ${DATA_ENV_KEY} 指向含有 msgpack.gz 数据的路径`,
+  );
 }
 
 /**
