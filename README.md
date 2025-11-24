@@ -25,6 +25,12 @@ const zipf = zipfFrequency("frequency", "en");
 const tokens = tokenize("你好，世界", "zh");
 ```
 
+通过 npm 安装（发布后）：
+
+```bash
+npm install nodewordfreq
+```
+
 主要 API
 --------
 

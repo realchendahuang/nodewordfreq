@@ -24,7 +24,8 @@
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest"
+    "test": "vitest",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm test && npm run build"
   },
   "repository": {
     "type": "git",
