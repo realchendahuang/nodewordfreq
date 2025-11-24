@@ -20,7 +20,6 @@ function loadNodeJieba(externalWordlist: boolean): typeof import("nodejieba") | 
     try {
       // 在 ESM 环境下需通过 createRequire 动态加载 CommonJS 包。
       // 若未安装可选依赖，则捕获异常并回退至通用分词。
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       jieba = requireFromEsm("nodejieba");
       nodeJieba = jieba;
     } catch {

@@ -1,14 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
+
 import { LRUCache } from "lru-cache";
 
 import { getDataDir } from "../data/dataPath";
 import { readCBPack } from "../data/readCBPack";
 import { digitFreq, hasDigitSequence, smashNumbers } from "../numbers";
 import { lossyTokenize } from "../tokenize";
-import { freqToZipf, cBToFreq, zipfToFreq } from "./frequency";
+import { getLanguageInfo, normalizeLanguageTag } from "../utils/languageInfo";
+
 import { CACHE_SIZE, DEFAULT_WORDLIST, INFERRED_SPACE_FACTOR } from "./constants";
-import { normalizeLanguageTag, getLanguageInfo } from "../utils/languageInfo";
+import { cBToFreq, freqToZipf, zipfToFreq } from "./frequency";
 
 type FrequencyBuckets = string[][];
 

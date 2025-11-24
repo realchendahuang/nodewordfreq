@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { gunzipSync } from "node:zlib";
+
 import { Unpackr } from "msgpackr";
 
 import { getDataPath } from "./dataPath";
