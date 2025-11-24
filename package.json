@@ -15,7 +15,9 @@
   },
   "files": [
     "dist",
-    "data"
+    "data",
+    "LICENSE.txt",
+    "NOTICE.md"
   ],
   "scripts": {
     "build": "tsup",

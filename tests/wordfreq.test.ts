@@ -8,6 +8,7 @@ import {
   zipfFrequency,
   simpleTokenize,
   lossyTokenize,
+  tokenize,
 } from "../src";
 import { smashNumbers, hasDigitSequence } from "../src/numbers";
 
@@ -41,5 +42,24 @@ describe("wordfreq Node 版核心能力", () => {
   it("中文损失性分词应进行简体化处理，方便命中词表", () => {
     const tokens = lossyTokenize("漢字", "zh");
     expect(tokens.join("")).toContain("汉字");
+  });
+
+  it("若已安装 nodejieba，应输出多字词以对齐词频词典", () => {
+    let jiebaAvailable = false;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require("nodejieba");
+      jiebaAvailable = true;
+    } catch {
+      jiebaAvailable = false;
+    }
+
+    const tokens = tokenize("我来到北京清华大学", "zh");
+    if (jiebaAvailable) {
+      expect(tokens).toContain("清华大学");
+    } else {
+      // 未安装时至少不应崩溃，长度通常会更长（按字切分）
+      expect(tokens.length).toBeGreaterThan(0);
+    }
   });
 });
