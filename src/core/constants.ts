@@ -14,3 +14,11 @@ export const INFERRED_SPACE_FACTOR = 10;
  * 默认使用的词表名称。与 Python 版保持相同语义：优先 large，不存在则退回 small。
  */
 export const DEFAULT_WORDLIST = "best";
+
+/**
+ * 单字组合词频的惩罚因子。
+ * 当整词不在词库中时，会尝试用单字词频估算，但组合词的实际频率通常低于单字频率的简单组合，
+ * 因此需要额外的惩罚因子。值越大，估算出的词频越低。
+ * 经验值为 3，表示每多一个字，额外衰减 3 倍。
+ */
+export const CHAR_COMBINATION_PENALTY = 3;

@@ -9,7 +9,12 @@ import { digitFreq, hasDigitSequence, smashNumbers } from "../numbers";
 import { lossyTokenize } from "../tokenize";
 import { getLanguageInfo, normalizeLanguageTag } from "../utils/languageInfo";
 
-import { CACHE_SIZE, DEFAULT_WORDLIST, INFERRED_SPACE_FACTOR } from "./constants";
+import {
+  CACHE_SIZE,
+  DEFAULT_WORDLIST,
+  INFERRED_SPACE_FACTOR,
+  CHAR_COMBINATION_PENALTY,
+} from "./constants";
 import { cBToFreq, freqToZipf, zipfToFreq } from "./frequency";
 
 type FrequencyBuckets = string[][];
@@ -145,8 +150,47 @@ function roundToSignificantDigits(value: number, minimum: number): number {
 }
 
 /**
+ * 尝试用单字词频估算整词的词频（仅适用于中文）。
+ * 需求说明：当 jieba 把词作为整词处理，但该词不在 wordfreq 词库中时，
+ * 通过拆分为单字并组合它们的词频来给出一个合理的估算值。
+ *
+ * @param word - 要估算的词（已经过 smashNumbers 处理）
+ * @param freqs - 词频字典
+ * @returns 估算的词频概率，如果有单字也找不到则返回 null
+ */
+function estimateChineseWordFrequency(
+  word: string,
+  freqs: Map<string, number>,
+): number | null {
+  // 单字不需要 fallback，直接返回 null 表示确实找不到
+  if (word.length <= 1) {
+    return null;
+  }
+
+  const chars = [...word];
+  let oneOverResult = 0;
+
+  for (const char of chars) {
+    const freq = freqs.get(char);
+    if (freq === undefined) {
+      // 有单字也找不到，放弃估算
+      return null;
+    }
+    oneOverResult += 1 / freq;
+  }
+
+  // 使用调和平均计算基础词频，再应用惩罚因子
+  // 惩罚因子：组合词的实际频率通常远低于单字频率的简单组合
+  const baseFreq = 1 / oneOverResult;
+  const penalty = CHAR_COMBINATION_PENALTY ** (chars.length - 1);
+  return baseFreq / penalty;
+}
+
+/**
  * 计算指定词在给定语言与词表下的概率（0~1）。
- * 逻辑完全复刻 Python 版：分词 -> smash 数字 -> 频率合并 -> Jieba 补偿 -> 三位有效数字。
+ * 逻辑基于 Python 版：分词 -> smash 数字 -> 频率合并 -> Jieba 补偿 -> 三位有效数字。
+ *
+ * 中文增强：当整词不在词库中时，会尝试用单字词频估算，提高覆盖率。
  */
 export function wordFrequency(
   word: string,
@@ -168,13 +212,28 @@ export function wordFrequency(
   }
 
   const freqs = getFrequencyDict(lang, wordlist);
+  const isChineseTokenizer = info.tokenizer === "jieba";
   let oneOverResult = 0;
+
   for (const token of tokens) {
     const smashed = smashNumbers(token);
-    const freq = freqs.get(smashed);
+    let freq = freqs.get(smashed);
+
+    // 如果词库中找不到该 token
     if (freq === undefined) {
-      wordFrequencyCache.set(cacheKey, minimum);
-      return minimum;
+      // 对于中文，尝试用单字词频估算
+      if (isChineseTokenizer) {
+        const estimated = estimateChineseWordFrequency(smashed, freqs);
+        if (estimated !== null) {
+          freq = estimated;
+        }
+      }
+
+      // 仍然找不到，返回 minimum
+      if (freq === undefined) {
+        wordFrequencyCache.set(cacheKey, minimum);
+        return minimum;
+      }
     }
 
     // 多 token 频率合并使用 1/f 累加的方式，与原版保持一致，可避免被单个低频词放大影响。
@@ -183,7 +242,7 @@ export function wordFrequency(
   }
 
   let result = 1 / oneOverResult;
-  if (info.tokenizer === "jieba" && tokens.length > 1) {
+  if (isChineseTokenizer && tokens.length > 1) {
     result *= INFERRED_SPACE_FACTOR ** -(tokens.length - 1);
   }
 
