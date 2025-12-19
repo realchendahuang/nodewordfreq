@@ -1,7 +1,7 @@
 {
   "name": "nodewordfreq",
   "version": "0.2.1",
-  "description": "TypeScript/Node.js 版 wordfreq，提供跨语言的词频查询能力。",
+  "description": "TypeScript/Node.js 版 wordfreq，内置词频数据与中文分词词典，开箱即用的跨语言词频查询与 Zipf/分词能力。",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

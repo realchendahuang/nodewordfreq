@@ -45,7 +45,7 @@ npm install nodewordfreq
 
 数据路径
 --------
-- 默认读取包内 `data/`（0.2.1 起修复了 CJS/Bun 下误跳到 `node_modules/data` 的问题，正常情况下无需额外配置）。
+- 词频数据与中文 jieba 词典随 npm 包一起发布，默认读取包内 `data/`（0.2.1 起修复了 CJS/Bun 下误跳到 `node_modules/data` 的问题，正常情况下无需额外配置）。
 - 通过 `WORDFREQ_DATA` 环境变量可指定外部数据目录（如共享盘）。
 
 开发命令

@@ -45,7 +45,7 @@ Public API
 
 Data path
 ---------
-- Defaults to the bundled `data/` directory (0.2.1 fixes a CJS/Bun path issue that could mistakenly resolve to `node_modules/data`; no env var needed in normal usage).
+- Wordfreq packs and Chinese jieba dictionaries ship with the npm package; defaults to the bundled `data/` directory (0.2.1 fixes a CJS/Bun path issue that could mistakenly resolve to `node_modules/data`; no env var needed in normal usage).
 - Use environment variable `WORDFREQ_DATA` to point to an external data directory (e.g., shared volume).
 
 Development scripts
