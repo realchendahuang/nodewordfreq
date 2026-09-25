@@ -1,3 +1,10 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/realchendahuang/nodewordfreq?style=social)](https://github.com/realchendahuang/nodewordfreq)
+[![GitHub forks](https://img.shields.io/github/forks/realchendahuang/nodewordfreq?style=social)](https://github.com/realchendahuang/nodewordfreq/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/realchendahuang/nodewordfreq)](https://github.com/realchendahuang/nodewordfreq/issues)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/realchendahuang/nodewordfreq/pulls)
+[![Follow @realchendahuang](https://img.shields.io/badge/Follow-%40realchendahuang-1DA1F2?logo=x&logoColor=white)](https://x.com/realchendahuang)
+
 wordfreq is a Python library for looking up the frequencies of words in many
 languages, based on many sources of data.
 
